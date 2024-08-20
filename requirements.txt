@@ -1,0 +1,13 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+ipykernel
+ipywidgets
+seaborn
+pydot
+statsmodels
+requests
+geopy
+mlxtend
+streamlit
