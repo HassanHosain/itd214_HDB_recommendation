@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from mlxtend.frequent_patterns import fpgrowth, association_rules
 
 """
 Go to terminal and type streamlit run hdb_recommendation_app.py
@@ -12,6 +13,37 @@ rules = pd.read_pickle('./model/association_rules.pkl')
 # Load the original dataset to get the necessary columns for user input
 association_2017_2020_df = pd.read_csv('./output_data/output.csv')
 
+# Create categorical bins for continuous variables
+# Categorize floor area into bins: <50sqm, 50-100sqm, 100-150sqm, >150sqm
+association_2017_2020_df['floor_area_category'] = pd.cut(association_2017_2020_df['floor_area_sqm'], bins=[0, 50, 100, 150, 307], labels=['<50sqm', '50-100sqm', '100-150sqm', '>150sqm'])
+# # Categorize resale price into bins: <200K, 200K-500K, 500K-800K, >1mil
+association_2017_2020_df['price_category'] = pd.cut(association_2017_2020_df['resale_price'], bins=[0, 200000, 500000, 800000, 1000000], labels=['<200K', '200K-500K', '500K-800K', '>1mil'])
+# Categorize distance to MRT into bins: Very Close, Close, Moderate, 'Long (>1km)'
+association_2017_2020_df['distance_to_mrt_category'] = pd.cut(association_2017_2020_df['distance_to_mrt'], bins=[0, 100, 500, 1000, 5957], labels=['Very Close (0-100m)', 'Close (100m-500m)', 'Moderate (500m-1km)', 'Long (>1km)'])
+# Categorize remaining lease into bins: 55-65, 65-75, 75-85, >85 years
+association_2017_2020_df['new_remaining_lease_category'] = pd.cut(association_2017_2020_df['new_remaining_lease'], bins=[55, 65, 75, 85, 101], labels=['55-65', '65-75', '75-85', '>85'])
+
+# Store columns needed for display after filtering
+display_columns = ['block', 'street_name', 'storey_range']
+
+# Dropping unnecessary columns for association rule mining
+association_2017_2020_df_encoded = association_2017_2020_df.drop(display_columns + ['floor_area_sqm', 'lease_commence_date',
+                                                          'transaction_month_text', 'Latitude', 'Longitude', 'transaction_year',
+                                                          'distance_to_mrt', 'resale_price', 'new_remaining_lease',
+                                                          'transaction_month', 'address'], axis=1)
+
+
+# One-hot encoding to prepare the dataset for association rule mining
+# This converts categorical variables into a binary matrix (0s and 1s)
+encoded_df = pd.get_dummies(association_2017_2020_df_encoded)
+
+# Apply the FP-Growth algorithm to find frequent itemsets
+# min_support=0.2 means it only considers itemsets that appear in at least 20% of the transactions, we can tune this accordingly
+frequent_itemsets = fpgrowth(encoded_df, min_support=0.2, use_colnames=True)
+
+# Generate association rules from the frequent itemsets
+# # metric="confidence" filters the rules by confidence level, min_threshold=0.5 means confidence must be at least 50%
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.5)
 
 # Streamlit application --------------------------------
 st.title('HDB Resale Flat Recommendation')
