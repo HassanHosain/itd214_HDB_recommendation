@@ -28,6 +28,7 @@ The model is an association rule model, using the FPGrowth algorithm. FP-Growth 
 
 ### Data Exploration
 In the 1015618c_Reccomendation_prep.ipynb file, firstly i did some exploratory analysis first to understand better, utilizing libraries like pandas, numpy, matplotlib etc. There are 5 csv files, and went merged there are a total of 826,581 rows, 11 columns, year spanning from 1990-2020, 7 unique flat types, 20 unique flat models and 27 unique towns in the dataset.
+
 ![alt text](images/EDA_pt1.JPG) ![alt text](images/EDA_pt2.JPG)
 
 I have also plotted visualization barcharts to showcase in year 1997,1998 thera are huge spikes of transactions of hdb purchases , but the average throughout the months is mostly consistent.
