@@ -89,4 +89,5 @@ Since the business objective is for married couples, this dataset should be only
 
 ## Source Codes and Datasets
 https://github.com/HassanHosain/itd214_HDB_recommendation/tree/main
-Upload your model files and dataset into a GitHub repo and add the link here. 
+
+To access the streamlit web application: https://hassan-hosain-hdb-recommendation-fpgrowth.streamlit.app/
